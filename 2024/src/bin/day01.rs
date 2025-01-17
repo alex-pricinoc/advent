@@ -12,8 +12,8 @@ fn main() {
         *second_count.entry(nums.1).or_default() += 1;
     });
 
-    first.sort();
-    second.sort();
+    first.sort_unstable();
+    second.sort_unstable();
 
     let distance = first
         .iter()

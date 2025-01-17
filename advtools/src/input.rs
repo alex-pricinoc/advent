@@ -13,7 +13,7 @@ pub fn raw_string() -> &'static str {
         let infile = Path::new(&input);
         crate::Timer::start();
         Box::leak(
-            std::fs::read_to_string(&infile)
+            std::fs::read_to_string(infile)
                 .unwrap_or_else(|err| {
                     panic!(
                         "could not read input file '{infile}': {err}",
@@ -25,6 +25,7 @@ pub fn raw_string() -> &'static str {
     })
 }
 
+#[must_use]
 pub fn string() -> &'static str {
     raw_string().trim_end()
 }
@@ -32,7 +33,7 @@ pub fn string() -> &'static str {
 pub fn lines() -> impl Iterator<Item = &'static str> {
     string()
         .lines()
-        .map(|l| l.trim_end())
+        .map(str::trim_end)
         .filter(|l| !l.is_empty())
 }
 
@@ -48,6 +49,7 @@ pub fn parse_lines<T: InputItem>() -> impl Iterator<Item = T> {
     })
 }
 
+#[allow(clippy::module_name_repetitions)]
 pub trait InputItem
 where
     Self: Sized,
@@ -77,7 +79,7 @@ where
         let mut result = vec![];
 
         while let Some(item) = T::read_part(tok) {
-            result.push(item)
+            result.push(item);
         }
 
         Some(result)
@@ -111,7 +113,7 @@ tuple_impl!(T, U, V, W, Y, Z, T1, T2, T3, T4, T5);
 tuple_impl!(T, U, V, W, Y, Z, T1, T2, T3, T4, T5, T6);
 
 macro_rules! array_impl {
-    ( $ty:ident, $n:expr, $($qm:tt)+ ) => {
+    ( $ty:ident, $n:expr, $($qm:tt)+) => {
         impl<$ty: InputItem> InputItem for [$ty; $n] {
             fn read_part(tok: &mut impl Iterator<Item=&'static str>) -> Option<Self> {
                 Some([$( $ty::read_part(tok) $qm ),+])
