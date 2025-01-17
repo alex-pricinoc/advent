@@ -1,5 +1,4 @@
 SHELL = /bin/sh
-# can also be lto
 PROFILE = release
 
 .PHONY: all build 20*

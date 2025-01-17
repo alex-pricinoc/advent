@@ -2,8 +2,9 @@ use std::cell::RefCell;
 use std::sync::Mutex;
 use std::time::Instant;
 
-pub use itertools;
+pub use {itertools, num};
 
+pub mod grid;
 pub mod input;
 
 pub mod prelude {
