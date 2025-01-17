@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+    "2024"
+]
+
+[workspace.package]
+description = "Solutions for Advent of Code."
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+advtools = { version = "0.1.0", path = "advtools" }

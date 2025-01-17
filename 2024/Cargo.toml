@@ -1,0 +1,8 @@
+[package]
+name = "advent-2024"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+advtools.workspace = true
