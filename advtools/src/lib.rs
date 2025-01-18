@@ -8,7 +8,7 @@ pub mod grid;
 pub mod input;
 
 pub mod prelude {
-    pub use std::collections::HashMap;
+    pub use std::collections::{HashMap, HashSet};
 
     pub use itertools::{iproduct, Itertools};
     pub use regex::{Captures, Regex};
