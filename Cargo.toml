@@ -13,7 +13,7 @@ edition = "2021"
 advtools = { version = "0.1.0", path = "advtools" }
 
 [profile.release]
-debug = true
+# debug = true
 
 [profile.lto]
 inherits = "release"

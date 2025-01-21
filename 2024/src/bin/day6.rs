@@ -43,16 +43,14 @@ struct Iter<'a> {
 }
 
 impl Iter<'_> {
-    fn is_loop(self) -> bool {
+    fn is_loop(&mut self) -> bool {
         let mut visited = HashSet::new();
 
         let mut prev = self.pos;
 
         for d in self {
-            if prev == d.1 {
-                if !visited.insert(d) {
-                    return true;
-                }
+            if prev == d.1 && !visited.insert(d) {
+                return true;
             }
             prev = d.1;
         }
@@ -65,9 +63,9 @@ impl Iterator for Iter<'_> {
     type Item = (Direction, Pos);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let new_pos = (self.pos + self.dir)?;
+        let new_pos = (self.pos + self.dir.to_pos())?;
 
-        if *self.grid.get(new_pos)? == '#' {
+        if *self.grid.get(&new_pos)? == '#' {
             self.dir.turn_right();
         } else {
             self.pos = new_pos;
@@ -105,7 +103,7 @@ fn solve() -> Solution<usize, usize> {
         if !visited.contains(&pos) {
             day.grid[pos] = '#';
 
-            let it = day.iter_from(prev.0, prev.1);
+            let mut it = day.iter_from(prev.0, prev.1);
 
             if it.is_loop() {
                 part2 += 1;

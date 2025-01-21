@@ -3,13 +3,16 @@ use std::fmt::Display;
 use std::sync::Mutex;
 use std::time::Instant;
 
-pub use {itertools, num};
+pub use {itertools, num, rayon};
 
 pub mod grid;
 pub mod input;
 
+#[cfg(test)]
+mod tests;
+
 pub mod prelude {
-    pub use std::mem;
+    pub use std::{iter, mem};
 
     pub use hashbrown::{HashMap, HashSet};
     pub use itertools::{iproduct, Itertools};
@@ -43,4 +46,9 @@ impl<A: Display, B: Display> Display for Solution<A, B> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "part 1: {}\npart 2: {}", self.0, self.1)
     }
+}
+
+#[must_use]
+pub fn digits(n: usize) -> u32 {
+    n.checked_ilog10().map_or(1, |d| d + 1)
 }

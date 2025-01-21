@@ -16,7 +16,7 @@ fn solve() -> (usize, usize) {
     let mut part2 = 0;
 
     for pos in grid.positions() {
-        let get = |dir| grid.get((pos + dir)?);
+        let get = |dir| grid.get(&(pos + dir)?);
 
         if grid[pos] == 'X' {
             for dir in DIRECTIONS {

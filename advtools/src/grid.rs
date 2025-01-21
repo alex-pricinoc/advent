@@ -1,6 +1,7 @@
 use std::fmt::Display;
-use std::ops::{Add, Index, IndexMut, Mul};
+use std::ops::{Add, Index, IndexMut, Mul, Sub};
 
+use forward_ref_generic::{commutative_binop, forward_ref_binop, forward_ref_commutative_binop};
 use itertools::Itertools;
 use num::Integer;
 
@@ -10,15 +11,47 @@ pub struct Pos<N = usize> {
     pub y: N,
 }
 
+#[allow(non_snake_case)]
+pub const fn Pos<N>(x: N, y: N) -> Pos<N> {
+    Pos { x, y }
+}
+
 impl From<(usize, usize)> for Pos {
     fn from((x, y): (usize, usize)) -> Self {
         Self { x, y }
     }
 }
 
-#[allow(non_snake_case)]
-pub const fn Pos<N>(x: N, y: N) -> Pos<N> {
-    Pos { x, y }
+impl Sub for Pos {
+    type Output = Pos<isize>;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let x = rhs.x as isize - self.x as isize;
+        let y = rhs.y as isize - self.y as isize;
+        Pos(x, y)
+    }
+}
+
+forward_ref_binop! { impl Sub for Pos }
+
+impl<N> Add for Pos<N>
+where
+    N: Add<Output = N>,
+{
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+forward_ref_binop! {
+    [N]
+    impl Add for Pos<N>
+    where N: Copy + Add<Output = N>
 }
 
 impl Add<Pos<isize>> for Pos {
@@ -27,18 +60,13 @@ impl Add<Pos<isize>> for Pos {
     fn add(mut self, other: Pos<isize>) -> Self::Output {
         self.x = self.x.checked_add_signed(other.x)?;
         self.y = self.y.checked_add_signed(other.y)?;
-
         Some(self)
     }
 }
 
-impl Add<Direction> for Pos {
-    type Output = Option<Self>;
+commutative_binop! { impl Add for Pos, Pos<isize> }
 
-    fn add(self, dir: Direction) -> Self::Output {
-        self + dir.to_pos()
-    }
-}
+forward_ref_commutative_binop! { impl Add for Pos, Pos<isize> }
 
 impl<N: Integer + Copy> Mul<N> for Pos<N> {
     type Output = Self;
@@ -120,26 +148,26 @@ impl<T> Grid<T> {
     }
 
     #[must_use]
-    pub fn in_bounds(&self, pos: Pos) -> bool {
+    pub fn in_bounds(&self, pos: &Pos) -> bool {
         pos.x < self.w && pos.y < self.h
     }
 
     #[must_use]
-    pub fn get(&self, pos: Pos) -> Option<&T> {
+    pub fn get(&self, pos: &Pos) -> Option<&T> {
         if !self.in_bounds(pos) {
             return None;
         }
 
-        Some(&self[pos])
+        Some(&self[*pos])
     }
 
     #[must_use]
-    pub fn get_mut(&mut self, pos: Pos) -> Option<&mut T> {
+    pub fn get_mut(&mut self, pos: &Pos) -> Option<&mut T> {
         if !self.in_bounds(pos) {
             return None;
         }
 
-        Some(&mut self[pos])
+        Some(&mut self[*pos])
     }
 
     fn rows(&self) -> impl Iterator<Item = &[T]> {
