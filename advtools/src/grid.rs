@@ -115,6 +115,11 @@ impl Direction {
             Right => Down,
         }
     }
+
+    pub fn all() -> std::array::IntoIter<Direction, 4> {
+        use Direction::*;
+        [Up, Down, Right, Left].into_iter()
+    }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -170,12 +175,16 @@ impl<T> Grid<T> {
         Some(&mut self[*pos])
     }
 
-    fn rows(&self) -> impl Iterator<Item = &[T]> {
+    pub fn rows(&self) -> impl Iterator<Item = &[T]> {
         self.v.chunks_exact(self.w)
     }
 
     pub fn find_pos(&self, mut f: impl FnMut(&T) -> bool) -> Option<Pos> {
         self.positions().find(|&p| f(&self[p]))
+    }
+
+    pub fn neighbours(&self, from: Pos) -> impl Iterator<Item = Pos> + '_ {
+        Direction::all().flat_map(move |d| (from + d.to_pos()).take_if(|t| self.in_bounds(t)))
     }
 }
 
