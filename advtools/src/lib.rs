@@ -16,6 +16,7 @@ pub mod prelude {
 
     pub use hashbrown::{HashMap, HashSet};
     pub use itertools::{iproduct, Itertools};
+    pub use memoize::memoize;
     pub use regex::{Captures, Regex};
 
     pub use super::Solution;
